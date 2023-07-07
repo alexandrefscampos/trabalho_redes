@@ -2,9 +2,8 @@ import socket
 import os
 import random
 import shutil
-import filecmp
 
-# Função para salvar as cópias do arquivo
+# Função para salvar as cópias do arquivo no lado do servidor
 def save_copies(file_path, num_copies):
     # Obtém o diretório e nome do arquivo
     directory = os.path.dirname(file_path)
@@ -35,6 +34,7 @@ def save_copies(file_path, num_copies):
     else:
         print(f"As {num_copies} cópias do arquivo {file_name} já estão armazenadas no servidor")
 
+# Função para depositar as cópias do arquivo no lado do servidor
 def deposit_file(file_name, client_socket, num_copies):
     print('Recebido arquivo:', file_name)
 
@@ -69,6 +69,7 @@ def deposit_file(file_name, client_socket, num_copies):
         # Salva as cópias do arquivo
         save_copies(file_path, num_copies)
 
+# Função para recuperar as cópias do arquivo no lado do servidor
 def restore_file(file_name, client_socket):
     # Caminho completo do diretório do arquivo
     directory_path = os.path.join(os.getcwd(), STORAGE_DIR, file_name)

@@ -1,6 +1,7 @@
 import socket
 import os
 
+# Função para depositar as cópias do arquivo no lado do cliente
 def deposit_file(client_socket):
     # Obtém o caminho do arquivo que o cliente deseja depositar
     file_path = input("Digite o caminho completo do arquivo que deseja depositar: ")
@@ -43,6 +44,7 @@ def deposit_file(client_socket):
 
     print('Arquivo depositado:', file_name)
 
+# Função para recuperar as cópias do arquivo no lado do cliente
 def restore_file(client_socket):
     # Nome do arquivo que o cliente deseja recuperar
     file_name = input("Digite o nome do arquivo que deseja recuperar: ")
