@@ -1,7 +1,7 @@
 import socket
 import os
 
-def deposit_file():
+def deposit_file(client_socket):
     # Obtém o caminho do arquivo que o cliente deseja depositar
     file_path = input("Digite o caminho completo do arquivo que deseja depositar: ")
 
@@ -20,7 +20,7 @@ def deposit_file():
     # Quantidade de cópias desejadas
     num_copies = input("Digite a quantidade de cópias desejadas: ")
 
-    # Removendo os espaços vazios, caso existam, e fazendo o cast para int 
+    # Removendo os espaços vazios, caso existam, e fazendo o cast para int
     num_copies = int(str(num_copies).strip())
 
     if num_copies <= 0:
@@ -43,7 +43,7 @@ def deposit_file():
 
     print('Arquivo depositado:', file_name)
 
-def restore_file():
+def restore_file(client_socket):
     # Nome do arquivo que o cliente deseja recuperar
     file_name = input("Digite o nome do arquivo que deseja recuperar: ")
 
@@ -56,30 +56,45 @@ def restore_file():
     # Envia a mensagem ao servidor
     client_socket.send(message.encode())
 
-    # Caminho completo do diretório do arquivo no servidor
-    directory_path = os.path.join("dataStorage", file_name)
+    # Recebe a resposta do servidor
+    response = client_socket.recv(BUFFER_SIZE).decode()
 
-    # Recebe o arquivo do servidor e salva no cliente
-    file_path = os.path.join(os.getcwd(), file_name)
-    with open(file_path, 'wb') as file:
-        while True:
-            data = client_socket.recv(BUFFER_SIZE)
-            if not data:
-                break
-            file.write(data)
+    if response == "Arquivo não encontrado":
+        print(f"Arquivo {file_name} não encontrado.")
+    else:
+        # Pasta de destino para o arquivo recuperado
+        restored_dir = os.path.join(os.getcwd(), "restored_data")
 
-    print("Arquivo recuperado:", file_name)
+        # Verifica se o diretório de destino existe, senão cria o diretório
+        if not os.path.exists(restored_dir):
+            os.makedirs(restored_dir)
+            print(f"Diretório {restored_dir} criado.")
 
+        # Caminho completo do arquivo recuperado
+        file_path = os.path.join(restored_dir, file_name)
+
+        # Salva o arquivo recuperado no cliente
+        with open(file_path, 'wb') as file:
+            while True:
+                data = client_socket.recv(BUFFER_SIZE)
+                if not data:
+                    break
+                file.write(data)
+
+        print("Arquivo recuperado:", file_name)
 
 # Configurações do cliente
 HOST = "127.0.0.1"  # Endereço IP do servidor
 PORT = 12345  # Porta do servidor
 BUFFER_SIZE = 4096  # Tamanho do buffer de envio/recebimento
 
-# Cria um socket TCP/IP
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
 def main():
+
+    # Cria um socket TCP/IP
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     # Conecta ao servidor usando o endereço e a porta definidos
     client_socket.connect((HOST, PORT))
 
@@ -90,10 +105,10 @@ def main():
     option = str(option).strip()
 
     if option == 'depositar':
-        deposit_file()
+        deposit_file(client_socket)
 
     elif option == 'recuperar':
-        restore_file()
+        restore_file(client_socket)
 
     else:
         print("Opção inválida.")

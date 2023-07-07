@@ -4,8 +4,6 @@ import random
 import shutil
 import filecmp
 
-
-
 # Função para salvar as cópias do arquivo
 def save_copies(file_path, num_copies):
     # Obtém o diretório e nome do arquivo
@@ -71,10 +69,9 @@ def deposit_file(file_name, client_socket, num_copies):
         # Salva as cópias do arquivo
         save_copies(file_path, num_copies)
 
-
-def restore_file(file_name,client_socket):
+def restore_file(file_name, client_socket):
     # Caminho completo do diretório do arquivo
-    directory_path = os.path.join(STORAGE_DIR, file_name)
+    directory_path = os.path.join(os.getcwd(), STORAGE_DIR, file_name)
 
     if not os.path.exists(directory_path):
         print(f"Arquivo {file_name} não encontrado.")
@@ -137,10 +134,9 @@ def main():
         num_copies = int(num_copies)
 
         if operation == 'depositar':
-            deposit_file(file_name,client_socket,num_copies)
+            deposit_file(file_name, client_socket, num_copies)
         elif operation == 'recuperar':
-            restore_file(file_name,client_socket)
-
+            restore_file(file_name, client_socket)
         else:
             print("Operação inválida.")
 
