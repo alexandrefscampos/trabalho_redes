@@ -58,15 +58,14 @@ def restore_file(client_socket):
     # Envia a mensagem ao servidor
     client_socket.send(message.encode())
 
+    # Pasta de destino para o arquivo recuperado
+    restored_dir = os.path.join(os.getcwd(), "restored_data")
     # Recebe a resposta do servidor
     response = client_socket.recv(BUFFER_SIZE).decode()
 
     if response == "Arquivo não encontrado":
         print(f"Arquivo {file_name} não encontrado.")
     else:
-        # Pasta de destino para o arquivo recuperado
-        restored_dir = os.path.join(os.getcwd(), "restored_data")
-
         # Verifica se o diretório de destino existe, senão cria o diretório
         if not os.path.exists(restored_dir):
             os.makedirs(restored_dir)
@@ -75,8 +74,10 @@ def restore_file(client_socket):
         # Caminho completo do arquivo recuperado
         file_path = os.path.join(restored_dir, file_name)
 
-        # Salva o arquivo recuperado no cliente
+        # Recebe o arquivo do servidor e salva no cliente
         with open(file_path, 'wb') as file:
+            # Grava a resposta inicial (conteúdo do arquivo) no arquivo
+            file.write(response.encode())  
             while True:
                 data = client_socket.recv(BUFFER_SIZE)
                 if not data:
